@@ -13,13 +13,14 @@
 #include <math.h>
 
 
+// 聚类得到的锚框 尺寸
 float biases[18] = {10,13,16,30,33,23,30,61,62,45,59,119,116,90,156,198,373,326};
 
 layer make_yolo_layer(int batch,int w,int h,int n,int total,int classes)
 {
     layer l = {0};
-    l.n = n;
-    l.total = total;
+    l.n = n;// 每个尺度几种锚框 3 个尺度 每个尺度 3种锚框
+    l.total = total;// 9种 锚框
     l.batch = batch;
     l.h = h;
     l.w = w;
@@ -32,23 +33,23 @@ layer make_yolo_layer(int batch,int w,int h,int n,int total,int classes)
 
     l.biases = (float*)calloc(total*2,sizeof(float));
     for(int i =0;i<total*2;++i){
-        l.biases[i] = biases[i];
+        l.biases[i] = biases[i];// 拷贝 9种 锚框尺寸
     }
     l.mask = (int*)calloc(n,sizeof(int));
     if(l.w == 13){
         int j = 6;
         for(int i =0;i<l.n;++i)
-            l.mask[i] = j++;
+            l.mask[i] = j++;// 小尺寸图配合 大 锚框 6 7 8
     }
     if(l.w == 26){
         int j = 3;
         for(int i =0;i<l.n;++i)
-            l.mask[i] = j++;
+            l.mask[i] = j++;// 3 4 5
     }
     if(l.w == 52){
         int j = 0;
         for(int i =0;i<l.n;++i)
-            l.mask[i] = j++;
+            l.mask[i] = j++;// 0 1 2 大尺度配合小锚框
     }
     l.outputs = l.inputs;
     l.output = (float*)calloc(batch*l.outputs,sizeof(float));
